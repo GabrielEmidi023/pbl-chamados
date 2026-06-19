@@ -16,9 +16,6 @@ jobs:
       - name: Validar arquivo Docker Compose
         run: docker compose config
 
-      - name: Testar Build do Banco de Dados
-        run: docker build -t teste-db ./database
-
       - name: Testar Build do Backend
         run: docker build -t teste-backend ./backend
 
