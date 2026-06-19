@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Salas - PBL</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f6f9; color: #333; }
+        h1 { color: #1a365d; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { padding: 8px; width: 250px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 15px; background-color: #2b6cb0; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #1a365d; }
+        ul { list-style-type: none; padding: 0; }
+        li { background: white; margin: 5px 0; padding: 10px; border-radius: 4px; border-left: 5px solid #2b6cb0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <h1>Controle de Salas de Aula</h1>
+    
+    <h3>Cadastrar Nova Sala</h3>
+    <div class="form-group">
+        <label>Nome da Sala:</label>
+        <input type="text" id="nomeSala" placeholder="Ex: Laboratório 3">
+    </div>
+    <div class="form-group">
+        <label>Capacidade:</label>
+        <input type="number" id="capacidadeSala" placeholder="Ex: 30">
+    </div>
+    <button onclick="cadastrarSala()">Salvar Sala</button>
+
+    <h3>Salas Cadastradas</h3>
+    <ul id="listaSalas"></ul>
+
+    <script>
+
+        const API_URL = 'http://localhost:3000/salas';
+
+
+        async function carregarSalas() {
+            try {
+                const res = await fetch(API_URL);
+                const salas = await res.json();
+                const lista = document.getElementById('listaSalas');
+                
+                lista.innerHTML = salas.map(sala => 
+                    `<li><strong>${sala.nome}</strong> - Capacidade: ${sala.capacidad} pessoas</li>`
+                ).join('');
+            } catch (err) {
+                console.error("Erro ao carregar salas:", err);
+            }
+        }
+
+        async function cadastrarSala() {
+            const nome = document.getElementById('nomeSala').value;
+            const capacidade = document.getElementById('capacidadeSala').value;
+
+            if (!nome || !capacidade) {
+                alert("Por favor, preencha todos os campos!");
+                return;
+            }
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, capacidade })
+                });
+
+                document.getElementById('nomeSala').value = '';
+                document.getElementById('capacidadeSala').value = '';
+                carregarSalas();
+            } catch (err) {
+                console.error("Erro ao cadastrar sala:", err);
+            }
+        }
+
+
+        carregarSalas();
+    </script>
+</body>
+</html>

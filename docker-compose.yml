@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: db_salas
+    environment:
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: salas_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rede_pbl
+
+  backend:
+    build: ./backend
+    container_name: api_salas
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_USER: dev_user
+      DB_PASSWORD: password123
+      DB_NAME: salas_db
+    depends_on:
+      - db
+    networks:
+      - rede_pbl
+
+  frontend:
+    build: ./frontend
+    container_name: web_salas
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - rede_pbl
+
+volumes:
+  pgdata:
+
+networks:
+  rede_pbl:
+    driver: bridge
