@@ -1,0 +1,26 @@
+name: CI-PBL-Salas
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  build-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Validar arquivo Docker Compose
+        run: docker compose config
+
+      - name: Testar Build do Banco de Dados
+        run: docker build -t teste-db ./database
+
+      - name: Testar Build do Backend
+        run: docker build -t teste-backend ./backend
+
+      - name: Testar Build do Frontend
+        run: docker build -t teste-frontend ./frontend
